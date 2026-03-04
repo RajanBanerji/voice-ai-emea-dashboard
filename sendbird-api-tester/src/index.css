@@ -1,0 +1,29 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+body {
+  margin: 0;
+  background-color: #0D0A1C;
+  color: #E6EDF3;
+  font-family: 'Inter', system-ui, sans-serif;
+}
+
+::-webkit-scrollbar { width: 8px; height: 8px; }
+::-webkit-scrollbar-track { background: #0D0A1C; }
+::-webkit-scrollbar-thumb { background: #2E2A52; border-radius: 4px; }
+::-webkit-scrollbar-thumb:hover { background: #443F70; }
+
+.json-string { color: #93C5FD; }
+.json-number { color: #FDBA74; }
+.json-boolean { color: #93C5FD; }
+.json-null { color: #FCA5A5; }
+.json-key { color: #C4B5FD; }
+.json-bracket { color: #7C7C9E; }
+
+@keyframes fadeSlideIn {
+  from { opacity: 0; transform: translateY(-4px); }
+  to { opacity: 1; transform: translateY(0); }
+}
