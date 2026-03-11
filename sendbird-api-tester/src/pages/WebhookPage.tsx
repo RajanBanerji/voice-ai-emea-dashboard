@@ -620,7 +620,7 @@ const WebhookPage: React.FC = () => {
               {liveEvents.map(evt => {
                 const isOpen = expandedLiveId === evt.id;
                 return (
-                  <div key={evt.id} className="bg-[#16132D] border border-[#2E2A52] rounded-lg overflow-hidden">
+                  <div key={evt.id} className="bg-[#16132D] border border-[#2E2A52] rounded-lg">
                     <div
                       className="flex items-center gap-3 px-4 py-3 cursor-pointer hover:bg-[#1E1A3A] transition-colors"
                       onClick={() => setExpandedLiveId(isOpen ? null : evt.id)}
@@ -654,7 +654,7 @@ const WebhookPage: React.FC = () => {
                                 <path strokeLinecap="round" strokeLinejoin="round" d="M12 16v-4m0-4h.01" />
                               </svg>
                             </span>
-                            <div className="absolute right-0 top-full mt-1.5 z-50 hidden group-hover/sigbadge:block w-72 p-3 rounded-lg bg-[#1A1535] border border-red-800/50 shadow-xl text-left">
+                            <div className="absolute right-0 bottom-full mb-1.5 z-50 hidden group-hover/sigbadge:block w-72 p-3 rounded-lg bg-[#1A1535] border border-red-800/50 shadow-xl text-left">
                               <p className="text-xs font-semibold text-red-400 mb-1">Why does this happen?</p>
                               <p className="text-xs text-gray-300 leading-relaxed mb-2">
                                 The token used to configure the webhook server doesn't match the token Sendbird used to sign this request.
@@ -737,7 +737,7 @@ const WebhookPage: React.FC = () => {
               {activeCat.events.map(event => {
                 const isExpanded = expandedEvent === event.id;
                 return (
-                  <div key={event.id} className="bg-[#16132D] border border-[#2E2A52] rounded-lg overflow-hidden">
+                  <div key={event.id} className="bg-[#16132D] border border-[#2E2A52] rounded-lg">
                     <div
                       className="flex items-start gap-3 px-4 py-3 cursor-pointer hover:bg-[#1E1A3A] transition-colors"
                       onClick={() => setExpandedEvent(isExpanded ? null : event.id)}
