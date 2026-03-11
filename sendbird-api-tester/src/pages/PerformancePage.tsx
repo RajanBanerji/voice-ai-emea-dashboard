@@ -195,7 +195,7 @@ const PerformancePage: React.FC = () => {
                   contentStyle={{ backgroundColor: '#16132D', border: '1px solid #2E2A52', borderRadius: '8px' }}
                   labelStyle={{ color: '#E6EDF3' }}
                   itemStyle={{ color: '#9CA3AF' }}
-                  formatter={(value: number) => [`${value}ms`, 'Latency']}
+                  formatter={(value: number | undefined) => value !== undefined ? [`${value}ms`, 'Latency'] : ['', 'Latency']}
                 />
                 <ReferenceLine x={200} stroke="#22C55E" strokeDasharray="4 4" strokeWidth={1.5}
                   label={{ value: '200ms', fill: '#22C55E', fontSize: 10, position: 'top' }} />

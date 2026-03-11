@@ -22,12 +22,13 @@ function getHealthLabel(passed: number, total: number): {
   return { label: 'Failing', color: 'text-red-400', bgColor: 'bg-red-900/20', borderColor: 'border-red-700/30', dot: 'bg-red-500' };
 }
 
-function formatAvgLatency(ms: number): string {
+function _formatAvgLatency(ms: number): string {
   if (ms < 200) return `${ms}ms — fast`;
   if (ms < 500) return `${ms}ms — acceptable`;
   if (ms < 1000) return `${ms}ms — slow`;
   return `${ms}ms — very slow`;
 }
+void _formatAvgLatency;
 
 const HealthSummaryPanel: React.FC<HealthSummaryPanelProps> = ({ onNavigateToCategory, onDismiss }) => {
   const { results, globalSummary } = useTestResults();

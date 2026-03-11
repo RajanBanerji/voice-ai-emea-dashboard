@@ -132,34 +132,34 @@ const PrerequisiteStepsPanel: React.FC<PrerequisiteStepsPanelProps> = ({ steps }
                   </div>
 
                   {/* Request params */}
-                  {step.apiCall.params && Object.keys(step.apiCall.params).length > 0 && (
+                  {step.apiCall.params != null && Object.keys(step.apiCall.params).length > 0 ? (
                     <div>
                       <p className="text-[10px] text-gray-500 uppercase tracking-wider mb-1">Query Params</p>
                       <pre className="text-xs text-gray-400 font-mono bg-[#16132D] rounded px-2 py-1.5 border border-[#252145] overflow-x-auto max-h-24">
                         {JSON.stringify(step.apiCall.params, null, 2)}
                       </pre>
                     </div>
-                  )}
+                  ) : null}
 
                   {/* Request body */}
-                  {step.apiCall.body && (
+                  {step.apiCall.body != null ? (
                     <div>
                       <p className="text-[10px] text-gray-500 uppercase tracking-wider mb-1">Request Body</p>
                       <pre className="text-xs text-gray-400 font-mono bg-[#16132D] rounded px-2 py-1.5 border border-[#252145] overflow-x-auto max-h-32">
                         {JSON.stringify(step.apiCall.body, null, 2)}
                       </pre>
                     </div>
-                  )}
+                  ) : null}
 
                   {/* Response body (truncated) */}
-                  {step.apiCall.responseBody && (
+                  {step.apiCall.responseBody != null ? (
                     <div>
                       <p className="text-[10px] text-gray-500 uppercase tracking-wider mb-1">Response Body</p>
                       <pre className="text-xs text-gray-400 font-mono bg-[#16132D] rounded px-2 py-1.5 border border-[#252145] overflow-x-auto max-h-40">
                         {JSON.stringify(step.apiCall.responseBody, null, 2).slice(0, 2000)}
                       </pre>
                     </div>
-                  )}
+                  ) : null}
                 </div>
               )}
             </div>

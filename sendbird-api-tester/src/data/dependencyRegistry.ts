@@ -313,7 +313,7 @@ export interface ResolutionResult {
  * Returns both resolved values and detailed steps for display in the UI.
  */
 export async function resolveDependencies(
-  endpointPath: string,
+  _endpointPath: string,
   endpointCategory: string,
   pathParams: { name: string; isPathParam?: boolean }[],
   paramValues: Record<string, unknown>,
