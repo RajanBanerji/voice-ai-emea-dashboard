@@ -2,7 +2,7 @@ import React, { useMemo } from 'react';
 import { useTestResults } from '../context/TestResultsContext';
 import { useHistory } from '../context/HistoryContext';
 import { CATEGORIES, ALL_ENDPOINTS } from '../data/endpoints';
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Cell, PieChart, Pie } from 'recharts';
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Cell, PieChart, Pie, ReferenceLine } from 'recharts';
 
 const RATING_COLORS: Record<string, string> = {
   fast: '#22C55E',
@@ -114,6 +114,50 @@ const PerformancePage: React.FC = () => {
         </div>
       </div>
 
+      {/* Sendbird Benchmark Reference */}
+      <div className="bg-[#16132D] border border-[#2E2A52] rounded-lg p-4">
+        <div className="flex items-center gap-2 mb-3">
+          <h3 className="text-sm font-medium text-gray-300">Sendbird API Latency Benchmarks</h3>
+          <span className="text-xs text-gray-600 font-normal">— what the colors mean for your app</span>
+        </div>
+        <div className="grid grid-cols-4 gap-3">
+          {[
+            {
+              color: 'bg-green-500', border: 'border-green-700/30', textColor: 'text-green-400',
+              label: 'Fast', range: '< 200ms',
+              detail: 'Excellent. Real-time features (chat, presence) will feel instant to end users.',
+            },
+            {
+              color: 'bg-yellow-500', border: 'border-yellow-700/30', textColor: 'text-yellow-400',
+              label: 'Acceptable', range: '200 – 500ms',
+              detail: 'Normal for complex queries (message history, analytics). Most users won\'t notice.',
+            },
+            {
+              color: 'bg-orange-500', border: 'border-orange-700/30', textColor: 'text-orange-400',
+              label: 'Slow', range: '500ms – 1s',
+              detail: 'Users may perceive lag. Investigate payload size, network path, or plan limits.',
+            },
+            {
+              color: 'bg-red-500', border: 'border-red-700/30', textColor: 'text-red-400',
+              label: 'Critical', range: '> 1 000ms',
+              detail: 'Unacceptable for production. Check for rate limits, oversized payloads, or region mismatch.',
+            },
+          ].map(b => (
+            <div key={b.label} className={`bg-[#0D0A1C] border ${b.border} rounded-lg p-3`}>
+              <div className="flex items-center gap-2 mb-1.5">
+                <span className={`w-2.5 h-2.5 rounded-full shrink-0 ${b.color}`} />
+                <span className={`text-sm font-semibold ${b.textColor}`}>{b.label}</span>
+                <span className="text-xs text-gray-500 ml-auto">{b.range}</span>
+              </div>
+              <p className="text-xs text-gray-400 leading-relaxed">{b.detail}</p>
+            </div>
+          ))}
+        </div>
+        <p className="text-xs text-gray-600 mt-3">
+          Reference lines on the chart below mark the 200ms and 500ms thresholds. Sendbird's typical production latency is under 200ms for most REST endpoints.
+        </p>
+      </div>
+
       {testedCount === 0 ? (
         <div className="text-center py-16 text-gray-500">
           <p className="text-lg mb-2">No performance data yet</p>
@@ -123,7 +167,19 @@ const PerformancePage: React.FC = () => {
         <>
           {/* Latency by Endpoint */}
           <div className="bg-[#16132D] border border-[#2E2A52] rounded-lg p-4">
-            <h3 className="text-sm font-medium text-gray-300 mb-4">Latency by Endpoint (ms)</h3>
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="text-sm font-medium text-gray-300">Latency by Endpoint (ms)</h3>
+              <div className="flex items-center gap-4 text-xs text-gray-500">
+                <span className="flex items-center gap-1.5">
+                  <span className="w-6 border-t border-dashed border-green-500" />
+                  200ms target
+                </span>
+                <span className="flex items-center gap-1.5">
+                  <span className="w-6 border-t border-dashed border-yellow-500" />
+                  500ms warning
+                </span>
+              </div>
+            </div>
             <ResponsiveContainer width="100%" height={Math.max(300, latencyData.length * 28)}>
               <BarChart data={latencyData} layout="vertical" margin={{ left: 10, right: 30 }}>
                 <CartesianGrid strokeDasharray="3 3" stroke="#2E2A52" />
@@ -139,7 +195,12 @@ const PerformancePage: React.FC = () => {
                   contentStyle={{ backgroundColor: '#16132D', border: '1px solid #2E2A52', borderRadius: '8px' }}
                   labelStyle={{ color: '#E6EDF3' }}
                   itemStyle={{ color: '#9CA3AF' }}
+                  formatter={(value: number) => [`${value}ms`, 'Latency']}
                 />
+                <ReferenceLine x={200} stroke="#22C55E" strokeDasharray="4 4" strokeWidth={1.5}
+                  label={{ value: '200ms', fill: '#22C55E', fontSize: 10, position: 'top' }} />
+                <ReferenceLine x={500} stroke="#EAB308" strokeDasharray="4 4" strokeWidth={1.5}
+                  label={{ value: '500ms', fill: '#EAB308', fontSize: 10, position: 'top' }} />
                 <Bar dataKey="latency" radius={[0, 4, 4, 0]}>
                   {latencyData.map((entry, i) => (
                     <Cell key={i} fill={RATING_COLORS[entry.rating]} />

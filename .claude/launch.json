@@ -4,8 +4,8 @@
     {
       "name": "dev",
       "runtimeExecutable": "npm",
-      "runtimeArgs": ["run", "dev", "--prefix", "voice-ai-emea-dashboard"],
-      "port": 5173
+      "runtimeArgs": ["run", "dev", "--prefix", "sendbird-api-tester"],
+      "port": 5174
     }
   ]
 }

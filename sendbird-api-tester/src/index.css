@@ -27,3 +27,182 @@ body {
   from { opacity: 0; transform: translateY(-4px); }
   to { opacity: 1; transform: translateY(0); }
 }
+
+/* ── Light Mode ─────────────────────────────────────── */
+[data-theme="light"] body,
+[data-theme="light"] {
+  background-color: #F0F2F9;
+  color: #1E1B4B;
+}
+[data-theme="light"] ::-webkit-scrollbar-track { background: #E8ECF4; }
+[data-theme="light"] ::-webkit-scrollbar-thumb { background: #C4C9E2; }
+[data-theme="light"] ::-webkit-scrollbar-thumb:hover { background: #A0A8CC; }
+
+/* Backgrounds */
+[data-theme="light"] .bg-\[\#0D0A1C\] { background-color: #F0F2F9 !important; }
+[data-theme="light"] .bg-\[\#16132D\] { background-color: #FFFFFF !important; }
+[data-theme="light"] .bg-\[\#252145\] { background-color: #EEF0FA !important; }
+[data-theme="light"] .bg-\[\#1E1A3A\] { background-color: #E8EAFA !important; }
+[data-theme="light"] .bg-\[\#332E5C\] { background-color: #DDE0F5 !important; }
+[data-theme="light"] .bg-\[\#2E2A52\] { background-color: #E2E5F5 !important; }
+[data-theme="light"] .hover\:bg-\[\#1E1A3A\]:hover { background-color: #E8EAFA !important; }
+[data-theme="light"] .hover\:bg-\[\#332E5C\]:hover { background-color: #DDE0F5 !important; }
+[data-theme="light"] .hover\:bg-\[\#2E2A52\]:hover { background-color: #E2E5F5 !important; }
+
+/* Borders */
+[data-theme="light"] .border-\[\#2E2A52\] { border-color: #D0D4EE !important; }
+[data-theme="light"] .divide-\[\#2E2A52\] > * + * { border-color: #D0D4EE !important; }
+
+/* Text */
+[data-theme="light"] .text-white { color: #1E1B4B !important; }
+[data-theme="light"] .text-gray-200 { color: #374060 !important; }
+[data-theme="light"] .text-gray-300 { color: #4B5280 !important; }
+[data-theme="light"] .text-gray-400 { color: #6B7280 !important; }
+[data-theme="light"] .text-gray-500 { color: #8896A8 !important; }
+[data-theme="light"] .text-gray-600 { color: #9CA3AF !important; }
+
+/* Input / textarea backgrounds */
+[data-theme="light"] textarea,
+[data-theme="light"] input,
+[data-theme="light"] select {
+  background-color: #F4F6FF !important;
+  color: #1E1B4B !important;
+  border-color: #D0D4EE !important;
+}
+[data-theme="light"] ::placeholder { color: #A0A8CC !important; }
+
+/* JSON viewer tokens in light mode */
+[data-theme="light"] .json-key { color: #6D28D9; }
+[data-theme="light"] .json-string { color: #1D6FA8; }
+[data-theme="light"] .json-number { color: #B45309; }
+[data-theme="light"] .json-boolean { color: #1D6FA8; }
+[data-theme="light"] .json-null { color: #DC2626; }
+[data-theme="light"] .json-bracket { color: #6B7280; }
+
+/* Active sidebar item */
+[data-theme="light"] .bg-\[\#742DDD\]\/20 { background-color: rgba(116,45,221,0.1) !important; }
+[data-theme="light"] .border-\[\#742DDD\]\/30 { border-color: rgba(116,45,221,0.25) !important; }
+
+/* Primary action buttons — muted Sendbird purple for light bg */
+[data-theme="light"] .bg-\[\#742DDD\] {
+  background-color: #7C3AED !important;
+  color: #FFFFFF !important;
+}
+[data-theme="light"] .hover\:bg-\[\#6211C8\]:hover {
+  background-color: #6D28D9 !important;
+  color: #FFFFFF !important;
+}
+[data-theme="light"] .disabled\:bg-gray-700:disabled {
+  background-color: #D1D5DB !important;
+}
+
+/* HTTP method badges — pastel tints with dark text for light bg */
+[data-theme="light"] [data-method="GET"] {
+  background-color: #DBEAFE !important;
+  color: #1E40AF !important;
+}
+[data-theme="light"] [data-method="POST"] {
+  background-color: #DCFCE7 !important;
+  color: #166534 !important;
+}
+[data-theme="light"] [data-method="PUT"] {
+  background-color: #FEF3C7 !important;
+  color: #92400E !important;
+}
+[data-theme="light"] [data-method="DELETE"] {
+  background-color: #FEE2E2 !important;
+  color: #991B1B !important;
+}
+[data-theme="light"] [data-method="PATCH"] {
+  background-color: #EDE9FE !important;
+  color: #5B21B6 !important;
+}
+
+/* Pending badge (gray-600) — lighter so it reads well on white */
+[data-theme="light"] .bg-gray-600 {
+  background-color: #E5E7EB !important;
+  color: #374151 !important;
+}
+
+/* Pass / 2xx status badges — pastel green */
+[data-theme="light"] .bg-green-600 {
+  background-color: #DCFCE7 !important;
+  color: #166534 !important;
+}
+
+/* Fail / 4xx-5xx status badges — pastel red */
+[data-theme="light"] .bg-red-600 {
+  background-color: #FEE2E2 !important;
+  color: #991B1B !important;
+}
+
+/* Status badges — skipped/yellow → muted amber */
+[data-theme="light"] .bg-yellow-600 {
+  background-color: #FEF3C7 !important;
+  color: #92400E !important;
+}
+[data-theme="light"] .bg-yellow-500 {
+  background-color: #D97706 !important;
+}
+
+/* Resolve & Run amber button */
+[data-theme="light"] .bg-amber-600 {
+  background-color: #B45309 !important;
+}
+[data-theme="light"] .hover\:bg-amber-700:hover {
+  background-color: #92400E !important;
+}
+
+/* Active tab underline (response/performance tabs) */
+[data-theme="light"] .text-\[\#8B5CF6\] { color: #4F46E5 !important; }
+[data-theme="light"] .border-\[\#8B5CF6\] { border-color: #4F46E5 !important; }
+
+/* Performance latency text colours */
+[data-theme="light"] .text-yellow-400 { color: #B45309 !important; }
+[data-theme="light"] .text-green-400 { color: #15803D !important; }
+[data-theme="light"] .text-orange-400 { color: #C2410C !important; }
+[data-theme="light"] .text-red-400 { color: #DC2626 !important; }
+
+/* History page clear button (dark red → light red on white bg) */
+[data-theme="light"] .bg-red-900\/50 {
+  background-color: #FEE2E2 !important;
+  color: #991B1B !important;
+}
+[data-theme="light"] .hover\:bg-red-900\/70:hover {
+  background-color: #FECACA !important;
+}
+[data-theme="light"] .text-red-300 { color: #991B1B !important; }
+[data-theme="light"] .border-red-800\/40 { border-color: #FECACA !important; }
+
+/* WebhookPage event code badges (dark purple text → accessible purple) */
+[data-theme="light"] .text-purple-300 { color: #6D28D9 !important; }
+
+/* WebhookPage "What triggers this" box — mute neon green */
+[data-theme="light"] .bg-green-900\/10 { background-color: #F0FDF4 !important; }
+[data-theme="light"] .border-green-800\/30 { border-color: #BBF7D0 !important; }
+[data-theme="light"] .text-green-300 { color: #15803D !important; }
+[data-theme="light"] .text-green-400 { color: #15803D !important; }
+
+/* Recharts chart tooltips — override dark inline styles */
+[data-theme="light"] .recharts-default-tooltip {
+  background-color: #FFFFFF !important;
+  border-color: #D0D4EE !important;
+}
+[data-theme="light"] .recharts-tooltip-label { color: #1E1B4B !important; }
+[data-theme="light"] .recharts-tooltip-item { color: #4B5280 !important; }
+[data-theme="light"] .recharts-cartesian-axis-tick text { fill: #6B7280 !important; }
+
+/* TopBar ping badge backgrounds (dark opacity variants look wrong on white) */
+[data-theme="light"] .bg-green-900\/20 { background-color: #DCFCE7 !important; }
+[data-theme="light"] .bg-green-900\/30 { background-color: #DCFCE7 !important; }
+[data-theme="light"] .bg-yellow-900\/20 { background-color: #FEF9C3 !important; }
+[data-theme="light"] .bg-red-900\/20 { background-color: #FEE2E2 !important; }
+[data-theme="light"] .border-green-700\/40 { border-color: #86EFAC !important; }
+[data-theme="light"] .text-green-400 { color: #15803D !important; }
+
+/* Toast in light mode */
+[data-theme="light"] .react-hot-toast > div {
+  background: #FFFFFF !important;
+  color: #1E1B4B !important;
+  border-color: #D0D4EE !important;
+}

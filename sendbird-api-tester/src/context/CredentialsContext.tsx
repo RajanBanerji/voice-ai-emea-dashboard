@@ -63,7 +63,14 @@ export const CredentialsProvider: React.FC<{ children: React.ReactNode }> = ({ c
   }, []);
 
   const clearCredentials = useCallback(() => {
-    localStorage.removeItem('sb_credentials');
+    // Preserve appId/apiToken in cache so CredentialGate can pre-fill them on re-entry
+    try {
+      const raw = localStorage.getItem('sb_credentials');
+      if (raw) {
+        const parsed = JSON.parse(raw) as Record<string, unknown>;
+        localStorage.setItem('sb_credentials', JSON.stringify({ ...parsed, isConnected: false }));
+      }
+    } catch { /* ignore */ }
     setCredentialsState({ appId: '', apiToken: '', region: 'US', baseUrl: '', isConnected: false });
   }, []);
 

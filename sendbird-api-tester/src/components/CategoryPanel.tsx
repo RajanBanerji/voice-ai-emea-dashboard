@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useEffect, useRef } from 'react';
 import { useTestResults } from '../context/TestResultsContext';
 import { useTestRunner } from '../hooks/useTestRunner';
 import { useCredentials } from '../context/CredentialsContext';
@@ -9,13 +9,26 @@ import type { CategoryDef, EndpointDef } from '../data/endpoints';
 
 interface CategoryPanelProps {
   category: CategoryDef;
+  focusedEndpointId?: string | null;
+  onFocusCleared?: () => void;
 }
 
-const CategoryPanel: React.FC<CategoryPanelProps> = ({ category }) => {
+const CategoryPanel: React.FC<CategoryPanelProps> = ({ category, focusedEndpointId, onFocusCleared }) => {
   const { results, getCategorySummary, clearCategoryResults, includeDestructive, setIncludeDestructive, runProgress } = useTestResults();
   const { runSingleTest, runCategoryTests, cancelRun, pauseRun, resumeRun } = useTestRunner();
   const { credentials } = useCredentials();
   const [paramOverrides] = useState<Record<string, Record<string, unknown>>>({});
+  const cardRefs = useRef<Record<string, HTMLDivElement | null>>({});
+
+  useEffect(() => {
+    if (!focusedEndpointId) return;
+    const el = cardRefs.current[focusedEndpointId];
+    if (el) {
+      el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      const timer = setTimeout(() => onFocusCleared?.(), 2000);
+      return () => clearTimeout(timer);
+    }
+  }, [focusedEndpointId, onFocusCleared]);
 
   const epIds = category.endpoints.map(e => e.id);
   const summary = getCategorySummary(epIds);
@@ -162,13 +175,22 @@ const CategoryPanel: React.FC<CategoryPanelProps> = ({ category }) => {
       {/* Endpoint Cards */}
       <div className="space-y-2">
         {category.endpoints.map(ep => (
-          <TestCard
+          <div
             key={ep.id}
-            endpoint={ep}
-            result={results[ep.id]}
-            onRun={handleRunSingle}
-            onCopyCurl={handleCopyCurl}
-          />
+            ref={el => { cardRefs.current[ep.id] = el; }}
+            className={`rounded-lg transition-all duration-500 ${
+              focusedEndpointId === ep.id
+                ? 'ring-2 ring-[#742DDD] ring-offset-1 ring-offset-[#0D0A1C]'
+                : ''
+            }`}
+          >
+            <TestCard
+              endpoint={ep}
+              result={results[ep.id]}
+              onRun={handleRunSingle}
+              onCopyCurl={handleCopyCurl}
+            />
+          </div>
         ))}
       </div>
     </div>

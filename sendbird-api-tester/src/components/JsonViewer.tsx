@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 
 interface JsonViewerProps {
   data: unknown;
@@ -92,12 +92,21 @@ function highlightJson(json: string): React.ReactNode[] {
 }
 
 const JsonViewer: React.FC<JsonViewerProps> = ({ data, maxHeight = '400px' }) => {
+  const [copied, setCopied] = useState(false);
+
   let jsonString: string;
   try {
     jsonString = JSON.stringify(data, null, 2);
   } catch {
     jsonString = String(data);
   }
+
+  const handleCopy = () => {
+    navigator.clipboard.writeText(jsonString).then(() => {
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    }).catch(() => {/* ignore */});
+  };
 
   if (!jsonString || jsonString === 'undefined') {
     return (
@@ -113,13 +122,41 @@ const JsonViewer: React.FC<JsonViewerProps> = ({ data, maxHeight = '400px' }) =>
   const highlighted = highlightJson(jsonString);
 
   return (
-    <div
-      className="bg-[#0D0A1C] rounded-lg border border-[#2E2A52] p-4 overflow-auto"
-      style={{ maxHeight }}
-    >
-      <pre className="font-mono text-sm whitespace-pre-wrap break-words m-0">
-        {highlighted}
-      </pre>
+    <div className="relative group">
+      <button
+        onClick={handleCopy}
+        title="Copy response JSON"
+        className={`absolute top-2 right-2 z-10 flex items-center gap-1 px-2 py-1 rounded text-[11px] font-medium transition-all
+          opacity-0 group-hover:opacity-100
+          ${copied
+            ? 'bg-green-700/80 text-green-200 border border-green-600/60'
+            : 'bg-[#2E2A52] hover:bg-[#3D3870] text-gray-400 hover:text-gray-200 border border-[#3D3870]'
+          }`}
+      >
+        {copied ? (
+          <>
+            <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+            </svg>
+            Copied!
+          </>
+        ) : (
+          <>
+            <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
+            </svg>
+            Copy
+          </>
+        )}
+      </button>
+      <div
+        className="bg-[#0D0A1C] rounded-lg border border-[#2E2A52] p-4 overflow-auto"
+        style={{ maxHeight }}
+      >
+        <pre className="font-mono text-sm whitespace-pre-wrap break-words m-0">
+          {highlighted}
+        </pre>
+      </div>
     </div>
   );
 };

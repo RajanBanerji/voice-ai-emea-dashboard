@@ -7,6 +7,8 @@ import PrerequisiteStepsPanel from './PrerequisiteStepsPanel';
 import DocsInfoButton from './DocsInfoButton';
 import { useSendbirdApi } from '../hooks/useSendbirdApi';
 import { useDependencyResolver } from '../hooks/useDependencyResolver';
+import { getErrorExplanation } from '../utils/errorExplanations';
+import { useMode } from '../context/ModeContext';
 
 interface TestCardProps {
   endpoint: EndpointDef;
@@ -114,6 +116,7 @@ const TestCard: React.FC<TestCardProps> = ({
     'response'
   );
 
+  const { isDevMode } = useMode();
   const { callApi } = useSendbirdApi();
   const { steps, isResolving, hasUnresolved, resolveAll } = useDependencyResolver(
     endpoint, paramValues, callApi
@@ -217,6 +220,7 @@ const TestCard: React.FC<TestCardProps> = ({
         {/* Method badge */}
         <span
           className="px-2 py-0.5 rounded text-xs font-bold text-white uppercase flex-shrink-0"
+          data-method={endpoint.method}
           style={{ backgroundColor: methodColor }}
         >
           {endpoint.method}
@@ -264,7 +268,11 @@ const TestCard: React.FC<TestCardProps> = ({
           }}
           disabled={status === 'running' || isResolving}
         >
-          {isResolving ? 'Resolving...' : hasUnresolved ? 'Resolve & Run' : 'Run Test'}
+          {isResolving
+            ? (isDevMode ? 'Resolving...' : 'Setting up...')
+            : hasUnresolved
+              ? (isDevMode ? 'Resolve & Run' : 'Set Up & Run')
+              : 'Run Test'}
         </button>
       </div>
 
@@ -282,7 +290,7 @@ const TestCard: React.FC<TestCardProps> = ({
           {/* Parameters Section */}
           {allParams.length > 0 && (
             <div className="space-y-3">
-              <h4 className="text-sm font-medium text-gray-300">Parameters</h4>
+              <h4 className="text-sm font-medium text-gray-300">{isDevMode ? 'Parameters' : 'Settings'}</h4>
               <div className="grid gap-3">
                 {allParams.map((param) => (
                   <div key={param.name} className="space-y-1">
@@ -292,7 +300,7 @@ const TestCard: React.FC<TestCardProps> = ({
                       </label>
                       {param.isPathParam && (
                         <span className="px-1.5 py-0.5 rounded text-[10px] font-medium bg-purple-900/50 text-purple-300 border border-purple-700">
-                          Path
+                          {isDevMode ? 'Path' : 'In URL'}
                         </span>
                       )}
                       {param.required ? (
@@ -357,7 +365,7 @@ const TestCard: React.FC<TestCardProps> = ({
             <div className="space-y-2">
               <div className="flex items-center justify-between">
                 <h4 className="text-sm font-medium text-gray-300">
-                  Request Body
+                  {isDevMode ? 'Request Body' : 'Data to Send'}
                 </h4>
                 <button
                   className="text-xs text-gray-500 hover:text-gray-300 transition-colors"
@@ -391,19 +399,26 @@ const TestCard: React.FC<TestCardProps> = ({
               onClick={hasUnresolved ? handleResolveAndRun : handleRun}
               disabled={status === 'running' || isResolving}
             >
-              {status === 'running' ? 'Running...' : isResolving ? 'Resolving...' : hasUnresolved ? 'Resolve & Run' : 'Run'}
+              {status === 'running'
+                ? 'Running...'
+                : isResolving
+                  ? (isDevMode ? 'Resolving...' : 'Setting up...')
+                  : hasUnresolved
+                    ? (isDevMode ? 'Resolve & Run' : 'Set Up & Run')
+                    : 'Run'}
             </button>
             <button
               className="px-4 py-1.5 rounded text-sm font-medium text-gray-300 bg-[#252145] hover:bg-[#2E2A52] border border-[#2E2A52] transition-colors"
               onClick={handleResetParams}
             >
-              Reset Params
+              {isDevMode ? 'Reset Params' : 'Reset'}
             </button>
             <button
               className="px-4 py-1.5 rounded text-sm font-medium text-gray-300 bg-[#252145] hover:bg-[#2E2A52] border border-[#2E2A52] transition-colors"
               onClick={handleCopyCurl}
+              title={isDevMode ? 'Copy as cURL command' : 'Copy as a terminal command to run this API call yourself'}
             >
-              Copy cURL
+              {isDevMode ? 'Copy cURL' : 'Copy Command'}
             </button>
           </div>
 
@@ -412,38 +427,61 @@ const TestCard: React.FC<TestCardProps> = ({
             <PrerequisiteStepsPanel steps={result.prerequisiteSteps} />
           )}
 
-          {/* Error Section */}
-          {result?.status === 'fail' && result.error && (
-            <div className="bg-red-900/20 border border-red-800 rounded-lg px-4 py-3">
-              <div className="flex items-start gap-2">
-                <svg
-                  className="w-5 h-5 text-red-400 flex-shrink-0 mt-0.5"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                  strokeWidth={2}
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    d="M12 9v2m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-                  />
-                </svg>
-                <div className="space-y-1">
-                  <p className="text-sm font-medium text-red-300">
-                    Error
-                  </p>
-                  <p className="text-sm text-red-400">
-                    {result.error.message}
-                  </p>
-                  {result.error.code && (
-                    <p className="text-xs text-red-500 font-mono">
-                      Code: {result.error.code}
+          {/* Error Section — plain-English explanation + raw details */}
+          {result?.status === 'fail' && (
+            (() => {
+              const httpStatus = result.httpStatus ?? 0;
+              const explanation = getErrorExplanation(httpStatus, result.response?.body);
+              const severityBorder = explanation.severity === 'high' ? 'border-red-700' : explanation.severity === 'medium' ? 'border-orange-700' : 'border-yellow-700';
+              const severityBg = explanation.severity === 'high' ? 'bg-red-900/20' : explanation.severity === 'medium' ? 'bg-orange-900/20' : 'bg-yellow-900/20';
+              const severityTitle = explanation.severity === 'high' ? 'text-red-300' : explanation.severity === 'medium' ? 'text-orange-300' : 'text-yellow-300';
+              const severityText = explanation.severity === 'high' ? 'text-red-400' : explanation.severity === 'medium' ? 'text-orange-400' : 'text-yellow-400';
+              return (
+                <div className={`${severityBg} border ${severityBorder} rounded-lg px-4 py-4 space-y-3`}>
+                  {/* Title row */}
+                  <div className="flex items-start gap-2">
+                    <svg className={`w-5 h-5 ${severityTitle} shrink-0 mt-0.5`} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v2m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                    <div className="space-y-1 flex-1">
+                      <p className={`text-sm font-semibold ${severityTitle}`}>{explanation.title}</p>
+                      <p className={`text-sm ${severityText}`}>{explanation.plain}</p>
+                    </div>
+                    {httpStatus > 0 && (
+                      <span className="text-xs font-mono bg-black/20 text-gray-400 px-2 py-0.5 rounded shrink-0">{httpStatus}</span>
+                    )}
+                  </div>
+
+                  {/* Fix steps */}
+                  <div>
+                    <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-1.5">How to fix it</p>
+                    <ul className="space-y-1">
+                      {explanation.fixSteps.map((step, i) => (
+                        <li key={i} className="flex items-start gap-2 text-sm text-gray-300">
+                          <span className="text-[#742DDD] shrink-0 mt-0.5">→</span>
+                          <span>{step}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+
+                  {/* Docs hint */}
+                  {explanation.docsHint && (
+                    <p className="text-xs text-gray-500 border-t border-white/10 pt-2">
+                      📖 {explanation.docsHint}
                     </p>
                   )}
+
+                  {/* Raw error message */}
+                  {result.error?.message && (
+                    <details className="text-xs">
+                      <summary className="text-gray-500 cursor-pointer hover:text-gray-400 select-none">Raw error message</summary>
+                      <p className="mt-1 text-red-400 font-mono break-all">{result.error.message}</p>
+                    </details>
+                  )}
                 </div>
-              </div>
-            </div>
+              );
+            })()
           )}
 
           {/* Response Section */}
@@ -480,7 +518,7 @@ const TestCard: React.FC<TestCardProps> = ({
                   {result?.httpStatus != null && (
                     <div className="flex items-center gap-2">
                       <span className="text-sm text-gray-400">
-                        HTTP Status:
+                        {isDevMode ? 'HTTP Status:' : 'Server Response:'}
                       </span>
                       <span
                         className={`px-2 py-0.5 rounded text-xs font-bold text-white ${getStatusCodeColor(
@@ -547,7 +585,7 @@ const TestCard: React.FC<TestCardProps> = ({
                   {result?.ttfbMs != null && (
                     <div className="flex items-center justify-between">
                       <span className="text-sm text-gray-400">
-                        Time to First Byte (TTFB)
+                        {isDevMode ? 'Time to First Byte (TTFB)' : 'Response Start Time'}
                       </span>
                       <span className="text-sm font-mono text-gray-200">
                         {result.ttfbMs}ms

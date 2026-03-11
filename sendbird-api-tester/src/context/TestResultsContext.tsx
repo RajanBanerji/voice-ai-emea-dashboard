@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, useCallback } from 'react';
+import React, { createContext, useContext, useState, useCallback, useEffect } from 'react';
 
 export type TestStatus = 'pending' | 'running' | 'pass' | 'fail' | 'skipped';
 
@@ -85,18 +85,38 @@ interface TestResultsContextType {
 
 const TestResultsContext = createContext<TestResultsContextType | null>(null);
 
+const RESULTS_STORAGE_KEY = 'sendbird_test_results';
+
+function loadResults(): Record<string, TestResult> {
+  try {
+    const data = localStorage.getItem(RESULTS_STORAGE_KEY);
+    return data ? JSON.parse(data) : {};
+  } catch { return {}; }
+}
+
+function saveResults(results: Record<string, TestResult>) {
+  try {
+    localStorage.setItem(RESULTS_STORAGE_KEY, JSON.stringify(results));
+  } catch { /* storage full */ }
+}
+
 export const TestResultsProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [results, setResults] = useState<Record<string, TestResult>>({});
+  const [results, setResults] = useState<Record<string, TestResult>>(loadResults);
   const [runProgress, setRunProgress] = useState<RunProgress>({
     isRunning: false, current: 0, total: 0, isPaused: false,
   });
   const [includeDestructive, setIncludeDestructive] = useState(false);
 
+  useEffect(() => { saveResults(results); }, [results]);
+
   const setResult = useCallback((endpointId: string, result: TestResult) => {
     setResults(prev => ({ ...prev, [endpointId]: result }));
   }, []);
 
-  const clearResults = useCallback(() => setResults({}), []);
+  const clearResults = useCallback(() => {
+    setResults({});
+    localStorage.removeItem(RESULTS_STORAGE_KEY);
+  }, []);
 
   const clearCategoryResults = useCallback((category: string, endpointIds: string[]) => {
     void category;

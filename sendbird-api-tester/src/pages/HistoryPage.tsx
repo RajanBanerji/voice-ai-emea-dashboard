@@ -3,6 +3,7 @@ import { useHistory } from '../context/HistoryContext';
 import { exportHistory } from '../utils/exportResults';
 import JsonViewer from '../components/JsonViewer';
 import toast from 'react-hot-toast';
+import { useMode } from '../context/ModeContext';
 
 const METHOD_COLORS: Record<string, string> = {
   GET: '#3B82F6',
@@ -14,10 +15,12 @@ const METHOD_COLORS: Record<string, string> = {
 
 const HistoryPage: React.FC = () => {
   const { history, clearHistory, removeEntry } = useHistory();
+  const { isDevMode } = useMode();
   const [search, setSearch] = useState('');
   const [filterMethod, setFilterMethod] = useState<string>('');
   const [filterResult, setFilterResult] = useState<string>('');
   const [expandedId, setExpandedId] = useState<string | null>(null);
+  const [confirmClear, setConfirmClear] = useState(false);
 
   const filtered = useMemo(() => {
     return history.filter(entry => {
@@ -42,6 +45,7 @@ const HistoryPage: React.FC = () => {
 
   const handleClear = () => {
     clearHistory();
+    setConfirmClear(false);
     toast.success('History cleared');
   };
 
@@ -56,9 +60,24 @@ const HistoryPage: React.FC = () => {
           <button onClick={handleExport} className="px-3 py-1.5 bg-[#2E2A52] hover:bg-[#332E5C] text-gray-300 text-xs font-medium rounded-md transition-colors">
             Export
           </button>
-          <button onClick={handleClear} className="px-3 py-1.5 bg-red-900/50 hover:bg-red-900/70 text-red-300 text-xs font-medium rounded-md transition-colors border border-red-800/40">
-            Clear All
-          </button>
+          {confirmClear ? (
+            <div className="flex items-center gap-2 bg-red-900/20 border border-red-700/40 rounded-lg px-3 py-1.5">
+              <span className="text-xs text-red-300">Delete all {history.length} entries?</span>
+              <button onClick={handleClear} className="px-2.5 py-1 bg-red-600 hover:bg-red-700 text-white text-xs font-medium rounded transition-colors">
+                Yes, clear all
+              </button>
+              <button onClick={() => setConfirmClear(false)} className="px-2.5 py-1 bg-[#2E2A52] hover:bg-[#332E5C] text-gray-300 text-xs font-medium rounded transition-colors">
+                Cancel
+              </button>
+            </div>
+          ) : (
+            <button
+              onClick={() => setConfirmClear(true)}
+              className="px-3 py-1.5 bg-red-900/50 hover:bg-red-900/70 text-red-300 text-xs font-medium rounded-md transition-colors border border-red-800/40"
+            >
+              Clear All
+            </button>
+          )}
         </div>
       </div>
 
@@ -125,6 +144,7 @@ const HistoryPage: React.FC = () => {
 
                   <span
                     className="px-2 py-0.5 rounded text-xs font-bold text-white uppercase flex-shrink-0"
+                    data-method={entry.method}
                     style={{ backgroundColor: METHOD_COLORS[entry.method] || '#6B7280' }}
                   >
                     {entry.method}
@@ -177,7 +197,7 @@ const HistoryPage: React.FC = () => {
 
                     {entry.request.body && (
                       <div>
-                        <p className="text-gray-500 text-xs mb-2">Request Body</p>
+                        <p className="text-gray-500 text-xs mb-2">{isDevMode ? 'Request Body' : 'Data Sent'}</p>
                         <JsonViewer data={entry.request.body} maxHeight="200px" />
                       </div>
                     )}
